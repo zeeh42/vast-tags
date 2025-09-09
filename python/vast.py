@@ -6,8 +6,9 @@ def get_meta_data(file_name: str):
     """read a .vast file and return metadata as a dictionary"""
     file_path = Path(file_name)
     if file_path.suffix != ".vast":
-        file_path = file_path.with_suffix(".vast")
+        file_path = file_path.with_name(file_path.name + ".vast")
 
+    print(file_path)
 
     if not file_path.is_file():
         raise FileNotFoundError(f"{file_path} does not exist")
@@ -49,5 +50,7 @@ def create_vast_from_template(template: str, dir = default_dir):
     files = dir_path.iterdir()
     for file in files:
         if file.is_file():
+            if file.suffix == ".vast":
+                continue
             with open(file.with_name(file.name + ".vast"), 'w') as f:
                 f.write(template_contents)
