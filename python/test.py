@@ -1,3 +1,3 @@
 import vast
 
-print(vast.get_meta_data("test_files/thing"))
+vast.create_vast_from_template("python/template.vast", "python/test_files")
