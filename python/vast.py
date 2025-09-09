@@ -4,10 +4,13 @@ default_dir = "files"
 
 def get_meta_data(file_name: str):
     """read a .vast file and return metadata as a dictionary"""
-    file_path = Path(file_name + ".vast")
+    file_path = Path(file_name)
+    if file_path.suffix != ".vast":
+        file_path = file_path.with_suffix(".vast")
+
 
     if not file_path.is_file():
-        raise FileNotFoundError(f"{file_name} does not exist")
+        raise FileNotFoundError(f"{file_path} does not exist")
     if file_path.suffix != ".vast":
         raise ValueError("File must be .vast")
     
@@ -20,7 +23,7 @@ def get_meta_data(file_name: str):
 
             key, value = line.split("=", 1)
             key = key.strip()
-            value = value.strip().strip('/"')
+            value = value.strip().strip('"')
 
             if "," in value:
                 value = [item.strip() for item in value.split(",") if item.strip()]
@@ -37,15 +40,14 @@ def create_vast_from_template(template: str, dir = default_dir):
 
     if not template_path.is_file():
         raise FileNotFoundError(f"{template_path} Not found.")
-    if not template_path.suffix == ".vast":
+    if template_path.suffix != ".vast":
         raise ValueError(f"{template_path} Is not a .vast file.")
 
     with open(template_path, 'r') as f:
         template_contents = f.read()
 
     files = dir_path.iterdir()
-
     for file in files:
         if file.is_file():
-            with open(file.with_suffix(".vast"), 'w') as f:
+            with open(file.with_name(file.name + ".vast"), 'w') as f:
                 f.write(template_contents)
